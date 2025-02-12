@@ -1,0 +1,79 @@
+name: "Deploy Website to S3"
+description: "Builds and deploys a React website to S3"
+
+inputs:
+  organization:
+    description: "GitHub organization name"
+    required: true
+  project:
+    description: "Project name"
+    required: true
+  gh-token:
+    description: "GitHub token for repository access"
+    required: true
+  ref:
+    description: "Git reference to checkout for react, project-react, and react-core"
+    required: true
+    default: "main"
+  aws-access-key-id:
+    description: "AWS Access Key ID"
+    required: true
+  aws-secret-access-key:
+    description: "AWS Secret Access Key"
+    required: true
+  s3-bucket:
+    description: "S3 bucket name"
+    required: true
+    default: "cdn.bighelp.ai"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout base repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.organization }}/react
+        ref: ${{ inputs.ref }}
+        token: ${{ inputs.gh-token }}
+
+    - name: Checkout app repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.organization }}/${{ inputs.project }}-react
+        ref: ${{ inputs.ref }}
+        token: ${{ inputs.gh-token }}
+        path: app-target
+
+    - name: Checkout react-core repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.organization }}/react-core
+        ref: ${{ inputs.ref }}
+        token: ${{ inputs.gh-token }}
+        path: react-core
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: "20"
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: app-target
+      run: npm install
+
+    - name: Build app
+      shell: bash
+      working-directory: app-target
+      run: APP_TARGET=$GITHUB_WORKSPACE/app-target REACT_CORE=$GITHUB_WORKSPACE/react-core node_modules/.bin/vite build
+
+    - name: Upload to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read
+      env:
+        SOURCE_DIR: app-target/dist/
+        DEST_DIR: ${{ inputs.project }}
+        AWS_S3_BUCKET: ${{ inputs.s3-bucket }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
