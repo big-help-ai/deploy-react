@@ -14,6 +14,28 @@ This GitHub Action builds and deploys a React website to Amazon S3. It handles c
 | `aws-secret-access-key` | AWS Secret Access Key              | Yes      | -                |
 | `s3-bucket`             | S3 bucket name                     | Yes      | `cdn.bighelp.ai` |
 
+## Usage
+
+```
+name: Deploy to S3
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy React App
+        uses: big-help-ai/deploy-react@v1
+        with:
+          organization: 'your-org'
+          project: 'your-project'
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
 ## Features
 
 - Checks out both the app repository and react-core repository
