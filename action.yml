@@ -59,12 +59,10 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      working-directory: app-target
       run: npm install
 
     - name: Build app
       shell: bash
-      working-directory: app-target
       run: APP_TARGET=$GITHUB_WORKSPACE/app-target REACT_CORE=$GITHUB_WORKSPACE/react-core node_modules/.bin/vite build
 
     - name: Upload to S3
@@ -72,7 +70,7 @@ runs:
       with:
         args: --acl public-read
       env:
-        SOURCE_DIR: app-target/dist/
+        SOURCE_DIR: dist/
         DEST_DIR: ${{ inputs.project }}
         AWS_S3_BUCKET: ${{ inputs.s3-bucket }}
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
