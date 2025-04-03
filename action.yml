@@ -51,10 +51,7 @@ runs:
 
     - name: Build app
       shell: bash
-      env:
-        REACT_SHARED: $GITHUB_WORKSPACE/react-shared
-        S3_PREFIX: ${{ inputs.s3-prefix }}
-      run: node_modules/.bin/vite build
+      run: REACT_SHARED=$GITHUB_WORKSPACE/react-shared S3_PREFIX=${{ inputs.s3-prefix }} node_modules/.bin/vite build
 
     - name: Upload to S3
       uses: jakejarvis/s3-sync-action@master
