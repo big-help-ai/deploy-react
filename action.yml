@@ -5,8 +5,8 @@ inputs:
   organization:
     description: "GitHub organization name"
     required: true
-  project:
-    description: "Project name"
+  s3-prefix:
+    description: "S3 folder/prefix where files should be uploaded (e.g., 'charm' or 'charm-staging')"
     required: true
   gh-token:
     description: "GitHub token for repository access"
@@ -51,7 +51,10 @@ runs:
 
     - name: Build app
       shell: bash
-      run: REACT_SHARED=$GITHUB_WORKSPACE/react-shared node_modules/.bin/vite build
+      env:
+        REACT_SHARED: $GITHUB_WORKSPACE/react-shared
+        S3_PREFIX: ${{ inputs.s3-prefix }}
+      run: node_modules/.bin/vite build
 
     - name: Upload to S3
       uses: jakejarvis/s3-sync-action@master
@@ -59,7 +62,7 @@ runs:
         args: --acl public-read
       env:
         SOURCE_DIR: dist/
-        DEST_DIR: ${{ inputs.project }}
+        DEST_DIR: ${{ inputs.s3-prefix }}
         AWS_S3_BUCKET: ${{ inputs.s3-bucket }}
         AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
