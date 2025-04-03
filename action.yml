@@ -13,8 +13,8 @@ inputs:
     required: true
   ref:
     description: "Git reference to checkout for react, project-react, and react-shared"
-    required: true
-    default: "main"
+    required: false
+    default: ${{ github.ref }}
   aws-access-key-id:
     description: "AWS Access Key ID"
     required: true
