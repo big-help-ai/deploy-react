@@ -25,6 +25,9 @@ inputs:
     description: "S3 bucket name"
     required: true
     default: "cdn.bighelp.ai"
+  build-env:
+    description: "Build environment (staging or production)"
+    required: true
 
 runs:
   using: "composite"
@@ -51,7 +54,7 @@ runs:
 
     - name: Build app
       shell: bash
-      run: REACT_SHARED=$GITHUB_WORKSPACE/react-shared S3_PREFIX=${{ inputs.s3-prefix }} node_modules/.bin/vite build
+      run: REACT_SHARED=$GITHUB_WORKSPACE/react-shared S3_PREFIX=${{ inputs.s3-prefix }} VITE_BUILD_ENV=${{ inputs.build-env }} node_modules/.bin/vite build
 
     - name: Upload to S3
       uses: jakejarvis/s3-sync-action@master
