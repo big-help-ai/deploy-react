@@ -51,9 +51,6 @@ runs:
       with:
         node-version: "22"
 
-    - run: rm -rf node_modules package-lock.json
-    - run: npm install --no-optional
-
     - name: Install dependencies
       shell: bash
       run: npm install
