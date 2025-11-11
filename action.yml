@@ -49,7 +49,10 @@ runs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: "20"
+        node-version: "22"
+
+    - run: rm -rf node_modules package-lock.json
+    - run: npm install --no-optional
 
     - name: Install dependencies
       shell: bash
